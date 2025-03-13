@@ -1,0 +1,2 @@
+sku  remove
+drop down with colors and sizes available
