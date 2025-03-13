@@ -1,13 +1,18 @@
 import express from "express";
 import cors from "cors";
-import fetch from "node-fetch";
 import path from "path";
 
 const app = express();
 app.use(cors()); // Enable CORS
 
-const ACCOUNT_NUMBER = "411878";
-const API_KEY = "33692f64-ac67-4514-9695-e79a66955d13";
+// ✅ Load environment variables
+const ACCOUNT_NUMBER = process.env.ACCOUNT_NUMBER;
+const API_KEY = process.env.API_KEY;
+
+if (!ACCOUNT_NUMBER || !API_KEY) {
+    console.error("❌ Missing API credentials. Make sure ACCOUNT_NUMBER and API_KEY are set in Render.");
+    process.exit(1); // Stop server if API keys are missing
+}
 
 // ✅ Serve Static Files (index.html)
 app.use(express.static(path.join(process.cwd(), "public")));
@@ -24,7 +29,7 @@ app.get("/products", async (req, res) => {
 
         // ✅ Get pagination parameters from request
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 50; // Default 5 products per page
+        const limit = parseInt(req.query.limit) || 50; 
 
         const authString = `${ACCOUNT_NUMBER}:${API_KEY}`;
         const authHeader = "Basic " + Buffer.from(authString).toString("base64");
@@ -43,7 +48,7 @@ app.get("/products", async (req, res) => {
             throw new Error(`S&S API Error: ${response.status} - ${errorText}`);
         }
 
-        const data = await response.json(); // API returns ALL products
+        const data = await response.json();
         console.log(`Total Products Fetched: ${data.length}`);
 
         // ✅ Implement manual pagination
@@ -51,11 +56,11 @@ app.get("/products", async (req, res) => {
         const paginatedProducts = data.slice(startIndex, startIndex + limit);
 
         res.json({
-            totalProducts: data.length, // Total products available
+            totalProducts: data.length,
             page,
             limit,
             totalPages: Math.ceil(data.length / limit),
-            products: paginatedProducts // Only return the sliced portion
+            products: paginatedProducts
         });
 
     } catch (error) {
@@ -64,9 +69,6 @@ app.get("/products", async (req, res) => {
     }
 });
 
-
-
-
-
+// ✅ Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}/`));
+app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}/`));
