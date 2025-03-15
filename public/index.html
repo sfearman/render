@@ -1,186 +1,356 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S&S Products</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>S&S Product Catalog</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            text-align: center;
-        }
-        #search-box {
-            padding: 10px;
-            width: 50%;
-            margin-bottom: 20px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            padding: 20px;
-            max-width: 1200px;
-            margin: auto;
-        }
-        .product-item {
-            background: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-            transition: 0.3s ease-in-out;
-        }
-        .product-item:hover {
-            background: #f0f0f0;
-        }
-        .product-id, .brand-name, .color, .size, .price {
-            font-size: 14px;
-            color: #555;
-            margin: 5px 0;
-        }
-        .product-image {
-            max-width: 150px;
-            margin-top: 10px;
-            border-radius: 5px;
-        }
-        .product-swatch {
-            max-width: 50px;
-            margin: 5px;
-            border-radius: 50%;
-            border: 1px solid #ccc;
-        }
-        #load-more {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        #load-more:hover {
-            background-color: #0056b3;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        text-align: center;
+        background-color: #1a1a1a;
+        color: #ffffff;
+      }
+      #search-box {
+        padding: 10px;
+        width: 50%;
+        margin-bottom: 20px;
+        font-size: 16px;
+        border: 1px solid #444;
+        border-radius: 5px;
+        background-color: #2d2d2d;
+        color: #ffffff;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+      }
+
+      #search-box:focus {
+        outline: none;
+        border-color: #666;
+        background-color: #3d3d3d;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      }
+
+      #search-box::placeholder {
+        color: #888;
+      }
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        padding: 20px;
+        max-width: 1200px;
+        margin: auto;
+      }
+      .item {
+        background: #363535;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: bold;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        transition: 0.3s ease-in-out;
+        cursor: pointer;
+        position: relative;
+        color: #ffffff;
+        border: 1px solid #444;
+      }
+      .item:hover {
+        background: #bbb9b9;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+        border-color: #666;
+      }
+      .item:active {
+        background: #565656;
+        transform: scale(0.98);
+      }
+      .item-id {
+        font-size: 14px;
+        color: #888;
+        margin: 5px 0;
+      }
+      .item-image {
+        max-width: 150px;
+        margin-top: 10px;
+        border-radius: 5px;
+      }
+      select {
+        margin-top: 10px;
+        padding: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid #444;
+        border-radius: 5px;
+        background-color: #2d2d2d;
+        color: #ffffff;
+      }
+      select:hover {
+        background-color: #3d3d3d;
+      }
+      option {
+        background-color: #2d2d2d;
+      }
+      label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
+    <h1>Select a Brand</h1>
+    <input
+      type="text"
+      id="search-box"
+      placeholder="Search brands..."
+      onkeyup="filterBrands()"
+    />
+    <div class="grid-container" id="brand-list">Loading...</div>
 
-    <h1>Black Tshirt Company Product List</h1>
-    <input type="text" id="search-box" placeholder="Search products..." onkeyup="filterProducts()">
-
-    <div class="product-grid" id="product-list">
-        Loading...
-    </div>
-
-    <button id="load-more">Load More</button>
+    <h2 id="brand-title"></h2>
+    <div class="grid-container" id="product-list"></div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let currentPage = 1;
-            const limit = 50; // Load 50 products per page
-            let allProducts = []; // ✅ Store all fetched products
+      document.addEventListener("DOMContentLoaded", function () {
+        let allBrands = [];
+        const API_BASE =
+          window.location.hostname === "localhost"
+            ? "http://localhost:3000"
+            : "https://render-z7ii.onrender.com";
 
-            async function fetchProducts(loadMore = false) {
-                try {
-                    const productList = document.getElementById("product-list");
+        async function fetchBrands() {
+          try {
+            const brandList = document.getElementById("brand-list");
+            brandList.innerHTML = `<p>Loading brands...</p>`;
 
-                    if (!loadMore) {
-                        productList.innerHTML = `<p>Loading products...</p>`;
-                    }
+            const response = await fetch(`${API_BASE}/brands`);
+            if (!response.ok)
+              throw new Error(
+                `Failed to fetch brands. Status: ${response.status}`
+              );
 
-                    const response = await fetch(`http://localhost:3000/products?page=${currentPage}&limit=${limit}`);
-                    console.log("Response Status:", response.status);
+            const data = await response.json();
+            allBrands = data.brands;
+            renderBrands(allBrands);
+          } catch (error) {
+            console.error("❌ Error fetching brands:", error);
+            document.getElementById("brand-list").innerHTML =
+              "<p>Failed to load brands.</p>";
+          }
+        }
 
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch products. Status: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-                    console.log("API Response:", data);
-
-                    if (!Array.isArray(data.products) || data.products.length === 0) {
-                        throw new Error("No products found or invalid format");
-                    }
-
-                    if (!loadMore) {
-                        allProducts = data.products;
-                    } else {
-                        allProducts = [...allProducts, ...data.products]; // ✅ Keep adding products
-                    }
-
-                    renderProducts(allProducts); // ✅ Always render from `allProducts`
-                    currentPage++;
-
-                } catch (error) {
-                    console.error("Error fetching products:", error);
-                    document.getElementById("product-list").innerHTML = "<p>Failed to load products.</p>";
-                }
-            }
-
-            function renderProducts(products) {
-                const productList = document.getElementById("product-list");
-                productList.innerHTML = products.map(prod => 
-                    `<div class="product-item">
-                        <strong>${prod.styleName || "No Name Available"}</strong>
-                        <div class="brand-name">Brand: ${prod.brandName || "Unknown Brand"}</div>
-                        <div class="product-id">SKU: ${prod.sku || "Unknown SKU"}</div>
-                        <div class="color">Color: ${prod.colorName || "Unknown"}</div>
-                        <div class="size">Size: ${prod.sizeName || "N/A"}</div>
-                        <div class="price">Price: $${prod.piecePrice || "N/A"}</div>
-                        ${prod.colorSwatchImage ? `<img src="https://www.ssactivewear.com/${prod.colorSwatchImage}" class="product-swatch" alt="${prod.colorName}">` : ""}
-                        ${prod.colorFrontImage ? `<img src="https://www.ssactivewear.com/${prod.colorFrontImage}" class="product-image" alt="${prod.styleName} - Front">` : ""}
+        function renderBrands(brands) {
+          const brandList = document.getElementById("brand-list");
+          brandList.innerHTML = brands
+            .map(
+              (brand) =>
+                `<div class="item" onclick="fetchProducts('${
+                  brand.brandID
+                }', '${brand.name}')">
+                        <strong>${brand.name}</strong>
+                        <div class="item-id">Brand ID: ${brand.brandID}</div>
+                        ${
+                          brand.image
+                            ? `<img src="https://www.ssactivewear.com/${brand.image}" class="item-image" alt="${brand.name}">`
+                            : ""
+                        }
                     </div>`
-                ).join("");
+            )
+            .join("");
+        }
+
+        async function fetchProducts(brandId, brandName) {
+          console.log("🔍 Fetching products for brand:", brandId);
+
+          document.getElementById(
+            "brand-title"
+          ).textContent = `Products from ${brandName}`;
+          document.getElementById("brand-title").style.display = "block";
+          document.getElementById("product-list").innerHTML =
+            "<p>Loading products...</p>";
+          document.getElementById("product-list").style.display = "grid";
+
+          try {
+            const response = await fetch(`${API_BASE}/products/${brandId}`);
+            if (!response.ok)
+              throw new Error(
+                `Failed to fetch products. Status: ${response.status}`
+              );
+
+            const data = await response.json();
+            console.log("✅ Products Fetched:", data.products.length);
+
+            if (data.products.length === 0) {
+              document.getElementById("product-list").innerHTML =
+                "<p>No products found for this brand.</p>";
+            } else {
+              renderProducts(data.products);
             }
+          } catch (error) {
+            console.error("❌ Error fetching products:", error);
+            document.getElementById("product-list").innerHTML =
+              "<p>Failed to load products.</p>";
+          }
+        }
 
-            function filterProducts() {
-    const searchInput = document.getElementById("search-box").value.toLowerCase().trim();
-    console.log("Filtering with:", searchInput); // ✅ Debug log
+        function renderProducts(products) {
+    console.log("🖼 Grouping products by style...");
 
-    if (!searchInput) {
-        renderProducts(allProducts); // ✅ Show all if search is empty
+    const productList = document.getElementById("product-list");
+    productList.innerHTML = ""; // Clear previous content
+
+    if (products.length === 0) {
+        productList.innerHTML = `<p>No products found.</p>`;
         return;
     }
 
-    const filteredProducts = allProducts.filter(prod => {
-        const name = prod.styleName?.toLowerCase() || "";
-        const brand = prod.brandName?.toLowerCase() || "";
-        const sku = prod.sku?.toLowerCase() || "";
-        const color = prod.colorName?.toLowerCase() || "";
-        const description = prod.description?.toLowerCase() || ""; // ✅ Check description field if available
-
-        return (
-            name.includes(searchInput) ||
-            brand.includes(searchInput) ||
-            sku.includes(searchInput) ||
-            color.includes(searchInput) ||
-            description.includes(searchInput)
-        );
+    // ✅ Group products by `styleName`
+    const groupedProducts = {};
+    products.forEach(product => {
+        if (!groupedProducts[product.styleName]) {
+            groupedProducts[product.styleName] = [];
+        }
+        groupedProducts[product.styleName].push(product);
     });
 
-    console.log("Filtered Results:", filteredProducts.length); // ✅ Debug log
+    // ✅ Render each unique product style
+    productList.innerHTML = Object.keys(groupedProducts).map((styleName, index) => {
+        const productVariants = groupedProducts[styleName];
 
-    renderProducts(filteredProducts); // ✅ Render the filtered results
+        // ✅ Get default product info (first variant)
+        const defaultProduct = productVariants[0];
+
+        // Format the default price to always show 2 decimal places
+        const defaultPrice = defaultProduct.piecePrice ? 
+            Number(defaultProduct.piecePrice.toString().replace(/[\$,]/g, '')).toFixed(2) : 
+            "N/A";
+
+        // ✅ Extract unique colors
+        const uniqueColors = [...new Map(productVariants.map(variant => [variant.colorName, variant])).values()];
+
+        // ✅ Store all product variants in localStorage for easy retrieval
+        localStorage.setItem(`productVariants-${index}`, JSON.stringify(productVariants));
+
+        return `
+            <div class="item">
+                <strong>${defaultProduct.brandName} - ${defaultProduct.styleName}</strong>
+                <div class="item-id">SKU: ${defaultProduct.sku}</div>
+                <img id="product-image-${index}" src="https://www.ssactivewear.com/${defaultProduct.colorFrontImage}" class="item-image" alt="${defaultProduct.styleName}">
+
+                <p>Size: ${defaultProduct.sizeName}</p>
+                <p>${defaultProduct.piecePrice ? `$${defaultPrice}` : 'N/A'}</p>
+
+                <label for="color-select-${index}">Choose a Color:</label>
+                <select id="color-select-${index}" onchange="updateProductDetails(${index})">
+                    ${uniqueColors.map(variant => `
+                        <option value="${variant.colorFrontImage}" data-color="${variant.colorName}">
+                            ${variant.colorName}
+                        </option>
+                    `).join("")}
+                </select>
+
+                <label for="size-select-${index}">Choose a Size:</label>
+                <select id="size-select-${index}" onchange="updateProductDetails(${index})">
+                    ${[...new Set(productVariants.map(variant => variant.sizeName))].map(size => `
+                        <option value="${size}">${size}</option>
+                    `).join("")}
+                </select>
+
+                <p>Price: $<span id="product-price-${index}">${defaultPrice}</span></p>
+            </div>
+        `;
+    }).join("");
+
+    console.log("✅ Products successfully grouped and rendered.");
 }
 
 
-            // ✅ Attach "Load More" event listener
-            document.getElementById("load-more").addEventListener("click", () => fetchProducts(true));
 
-            // ✅ Initial Load
-            fetchProducts();
 
-            // ✅ Expose `filterProducts` globally
-            window.filterProducts = filterProducts;
+       // ✅ Function to update product image based on selected color
+       function updateProductDetails(index) {
+    let colorSelect = document.getElementById(`color-select-${index}`);
+    let sizeSelect = document.getElementById(`size-select-${index}`);
+    let imageElement = document.getElementById(`product-image-${index}`);
+    let priceElement = document.getElementById(`product-price-${index}`);
 
-        });
+    let selectedColor = colorSelect.options[colorSelect.selectedIndex].getAttribute("data-color");
+    let selectedSize = sizeSelect.value;
+    let newImage = colorSelect.value;
+
+    console.log(`🎨 Selected Color: ${selectedColor}`);
+    console.log(`📏 Selected Size: ${selectedSize}`);
+
+    if (imageElement && newImage) {
+        imageElement.src = `https://www.ssactivewear.com/${newImage}`;
+    }
+
+    // ✅ Retrieve stored product variants
+    let productVariants = JSON.parse(localStorage.getItem(`productVariants-${index}`)) || [];
+
+    // ✅ Debug: Show all available variants for this product
+    console.log("🔎 Available Variants for this product:", productVariants);
+
+    // ✅ Find all sizes available for the selected color
+    let filteredSizes = productVariants.filter(variant => variant.colorName === selectedColor);
+    
+    // ✅ Update size dropdown while maintaining selected size if available
+    const currentSize = sizeSelect.value;
+    sizeSelect.innerHTML = filteredSizes.map(variant => `
+        <option value="${variant.sizeName}" ${variant.sizeName === currentSize ? 'selected' : ''}>
+            ${variant.sizeName}
+        </option>
+    `).join("");
+
+    // If current size isn't available in new color, use first available size
+    if (!filteredSizes.some(v => v.sizeName === currentSize)) {
+        selectedSize = filteredSizes[0].sizeName;
+    }
+
+    // ✅ Find the correct variant (color + size match)
+    let selectedVariant = filteredSizes.find(variant => variant.sizeName === selectedSize);
+
+    // ✅ Update price without double dollar signs
+    if (selectedVariant && selectedVariant.piecePrice) {
+        let rawPrice = selectedVariant.piecePrice.toString().replace(/[\$,]/g, ''); // Remove any $ and commas
+        let formattedPrice = Number(rawPrice).toFixed(2); // Force two decimal places
+        console.log(`✅ Found Variant: ${selectedVariant.colorName} - ${selectedVariant.sizeName} @ $${formattedPrice}`);
+        priceElement.textContent = formattedPrice; // Set price without $
+    } else {
+        console.log(`❌ No price found for ${selectedColor} (${selectedSize})`);
+        priceElement.textContent = "N/A";
+    }
+}
+
+// ✅ Attach function to global scope
+window.updateProductDetails = updateProductDetails;
+
+// Add filterBrands function
+function filterBrands() {
+    const searchBox = document.getElementById("search-box");
+    const searchTerm = searchBox.value.toLowerCase();
+    
+    const filteredBrands = allBrands.filter(brand => 
+        brand.name.toLowerCase().includes(searchTerm)
+    );
+    
+    renderBrands(filteredBrands);
+}
+
+// Make filterBrands globally accessible
+window.filterBrands = filterBrands;
+
+
+
+
+
+
+
+
+        fetchBrands();
+        window.fetchProducts = fetchProducts;
+      });
     </script>
-
-</body>
+  </body>
 </html>
