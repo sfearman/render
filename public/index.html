@@ -5,352 +5,972 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>S&S Product Catalog</title>
     <style>
+      /* Color Palette Styling */
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         font-family: Arial, sans-serif;
-        margin: 20px;
-        text-align: center;
-        background-color: #1a1a1a;
+        margin: 0;
+        padding: 0;
+        background-color: #1a1a1a7a;
         color: #ffffff;
+        display: flex;
       }
-      #search-box {
+
+      /* Sidebar Navigation */
+      .sidebar {
+        width: 15%;
+        background-color: #807d7d95;
         padding: 10px;
-        width: 50%;
-        margin-bottom: 20px;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        overflow-y: auto;
+        border-right: 2px solid #444;
+      }
+      .sidebar h1 {
         font-size: 16px;
-        border: 1px solid #444;
+        margin-bottom: 5px;
+        color: #fff;
+        text-align: center;
+      }
+      .category-list button {
+        display: block;
+        width: 90%;
+        padding: 3px;
+        margin-bottom: 3px;
+        background-color: #767474;
+        border: 333;
+        color: white;
+        font-size: 12px;
+        cursor: pointer;
+        text-align: center;
         border-radius: 5px;
-        background-color: #2d2d2d;
-        color: #ffffff;
-        transition: all 0.3s ease;
-        box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+        transition: background 0.3s;
+      }
+      .category-list button:hover {
+        background-color: #a3a0a0a1;
       }
 
-      #search-box:focus {
-        outline: none;
-        border-color: #666;
-        background-color: #3d3d3d;
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-      }
-
-      #search-box::placeholder {
-        color: #888;
+      /* Main Content */
+      .main-content {
+        margin-left: 16%;
+        padding: 20px;
+        flex-grow: 1;
+        text-align: center;
       }
       .grid-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
         gap: 15px;
         padding: 20px;
-        max-width: 1200px;
+        /* max-width: 1200px; */
         margin: auto;
       }
-      .item {
-        background: #363535;
-        padding: 15px;
+
+      /* Product Cards */
+      .product-item {
+        background: #7d7b7bcd;
+        padding: 2px;
         border-radius: 8px;
         text-align: center;
-        font-weight: bold;
-        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
         transition: 0.3s ease-in-out;
         cursor: pointer;
-        position: relative;
         color: #ffffff;
-        border: 1px solid #444;
+        border: 1px solid #292828;
       }
-      .item:hover {
+      .product-item img {
+        max-width: 90%;
+        margin-top: 10px;
+        border-radius: 5px;
+      }
+      
+      .product-item:hover {
         background: #bbb9b9;
         box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
         border-color: #666;
       }
-      .item:active {
-        background: #565656;
-        transform: scale(0.98);
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(133, 131, 131, 0.7);
+        justify-content: center;
+        align-items: center;
+        overflow: auto; /* ✅ allows scroll if modal overflows */
+        padding: 40px 20px; /* ✅ optional spacing */
       }
-      .item-id {
-        font-size: 14px;
-        color: #888;
-        margin: 5px 0;
+
+      .modal-content {
+        background: #b9b8b8;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 900px;
+        max-height: 90vh; /* ✅ prevents the modal from going off-screen */
+        overflow-y: auto; /* ✅ enables scroll inside modal */
+        text-align: center;
+        position: relative;
+        color: white;
+        display: flex;
+        flex-direction: column;
       }
-      .item-image {
-        max-width: 150px;
-        margin-top: 10px;
-        border-radius: 5px;
+
+      .modal-content ul {
+        color: #fff;
       }
-      select {
-        margin-top: 10px;
-        padding: 8px;
-        font-size: 14px;
+      .modal-content p {
+        color: #fff;
+      }
+
+      .close-button {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 22px;
         cursor: pointer;
-        border: 1px solid #444;
+        color: white;
+      }
+      .close-button:hover {
+        color: #2b2626;
+      } /* Modal Layout: Image on the Left, Details on the Right */
+
+      /* Modal Flexbox Layout */
+      .modal-layout {
+        display: flex;
+        flex-direction: row; /* Keep the left and right sections side by side */
+        gap: 2rem; /* Optional: space between columns */
+      }
+
+      .image-layout {
+        display: flex;
+        flex-direction: row; /* This is the magic line */
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .thumbnail-column {
+        display: flex;
+        flex-direction: column; /* Stack thumbnails vertically */
+        gap: 10px;
+        width: 70px; /* Add a fixed width to help layout */
+        flex-shrink: 0;
+      }
+
+      .main-image-frame img {
+        max-width: 400px;
+        width: 100%;
+        border-radius: 10px;
+        object-fit: contain;
+      }
+
+      .thumbnail-column img:hover {
+        border-color: #1111d3;
+      }
+
+      .main-image-frame img {
+        max-width: 80%;
+        border-radius: 10px;
+      }
+
+      .modal-image-container {
+        display: flex;
+        flex-direction: column; /* Stack thumbnails, image, and description */
+        align-items: center;
+      }
+
+      /* Right: Product Details */
+      .modal-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* Color Palette */
+      .color-palette {
+        display: flex;
+        flex-wrap: wrap; /* 🔥 add this */
+        gap: 10px;
+        margin: 10px 0;
+      }
+      .color-swatch {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: inline-block;
+        border: 2px solid #444;
+        transition: 0.3s;
+        margin: 5px;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+      }
+
+      .color-swatch:hover,
+      .selected-color {
+        border-color: #ffffff;
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+      }
+
+      /* Size Buttons */
+      .size-selection {
+        display: flex;
+        gap: 10px;
+        margin: 10px 0;
+      }
+      .size-btn {
+        background-color: #444;
+        color: white;
+        border: none;
+        padding: 8px 12px;
         border-radius: 5px;
-        background-color: #2d2d2d;
-        color: #ffffff;
+        cursor: pointer;
+        transition: 0.3s;
       }
-      select:hover {
-        background-color: #3d3d3d;
+      .size-btn:hover,
+      .selected-size {
+        background-color: #ff5e5e;
       }
-      option {
-        background-color: #2d2d2d;
+      .product-description {
+        margin-top: 1rem;
+        color: #cecbcb;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        width: 100%;
+        text-align: left;
+        padding: 0 10px;
       }
-      label {
-        display: block;
-        margin-top: 10px;
+
+      .size-tag {
+        display: inline-block;
+        padding: 6px 12px;
+        margin: 4px 6px;
+        background: #eee;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        color: #333;
+        border: 1px solid #ccc;
+        cursor: pointer; /* 👈 this is the magic */
+        transition: 0.2s ease;
+      }
+
+      .size-tag:hover {
+        background-color: #ddd;
+      }
+
+      .selected-size {
+        background-color: #ff5e5e;
+        color: white;
+        border-color: #ff5e5e;
+      }
+
+      .stacked-card {
+        background-color: #7f7d7da4;
+        border-radius: 10px;
+       padding-top: 20px;
+        color: white;
+        font-size: 1.5rem;
         font-weight: bold;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s ease;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 30%;
+        height: 125px;
+        border: 2px solid #333;
+        transition: all 0.4s ease-in-out;
+        transform: scale(1);
       }
+
+      .stacked-card img {
+        width: auto;
+        height: auto;
+        margin-bottom: 12px;
+        filter: brightness(0) invert(1); /* Optional: makes it white for dark mode */
+      }
+
+      .stacked-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 25px rgba(253, 253, 253, 0.685);
+        background: #a5a4a4bb;
+      }
+
+      #brand-list {
+        transition: all 0.6s ease-in-out; /* smooth animation for any changes */
+      }
+
+      #brand-list.stacked {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+        transition: all 0.6s ease-in-out; /* make sure the stacked state also transitions smoothly */
+      }
+      .stacked-logo {
+        width: 200px;
+        margin-bottom: 10px;
+      }
+      .ss-logo {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
+      }
+      /* BRAND STACKING */
+      #brand-list.transitioning {
+        opacity: 0;
+        transform: scale(0);
+        transition: all 1s ease-in-out;
+        pointer-events: none;
+      }
+
+      #brand-list.transitioned {
+        opacity: 1;
+        transform: scale(1);
+        transition: all 1s ease-in-out;
+        pointer-events: auto;
+      }
+      .loader {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #555;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 10px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.spinner-wrapper {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+  font-size: 1rem;
+  color: #ccc;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Optional fade-in effect */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+
+
     </style>
   </head>
   <body>
-    <h1>Select a Brand</h1>
-    <input
-      type="text"
-      id="search-box"
-      placeholder="Search brands..."
-      onkeyup="filterBrands()"
-    />
-    <div class="grid-container" id="brand-list">Loading...</div>
+  <!-- Sidebar Navigation -->
+<div class="sidebar">
+  <h1>Categories</h1>
+  <div class="category-list" id="category-list">Loading categories...</div>
+</div>
 
-    <h2 id="brand-title"></h2>
-    <div class="grid-container" id="product-list"></div>
+<!-- Main Content -->
+<div class="main-content">
+  <h1>Brands Available</h1>
+
+  <!-- Brand Grid -->
+  <div class="grid-container" id="brand-list">Loading brands...</div>
+
+  <!-- ✅ Spinner (centered and styled) -->
+  <div id="spinner" class="spinner-wrapper">
+    <div class="loader"></div>
+    <p id="loading-message"></p>
+  </div>
+
+  <!-- ✅ Product Section stays inside main-content -->
+  <h2 id="brand-title"></h2>
+  <div class="grid-container" id="product-list"></div>
+</div>
+
+<!-- Modal Structure -->
+<div id="product-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-button" onclick="closeModal()">&times;</span>
+
+    <div class="modal-layout">
+      <!-- Left: Product Image Only -->
+      <div class="modal-image-container">
+        <div class="image-layout">
+          <div class="thumbnail-column" id="thumbnail-column"></div>
+          <div class="main-image-frame">
+            <img id="modal-image" src="" alt="Product Image" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Product Details -->
+      <div class="modal-details">
+        <h2 id="modal-title"></h2>
+        <p><strong>Brand:</strong> <span id="modal-brand"></span></p>
+        <p><strong>SKU:</strong> <span id="modal-sku">Select size & color</span></p>
+
+        <p><strong>Colors:</strong></p>
+        <div class="color-palette" id="color-options"></div>
+        <p><strong>Sizes:</strong></p>
+        <div id="modal-sizes" class="product-sizes"></div>
+        <p><strong>Price:</strong> $<span id="modal-price"></span></p>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <p id="modal-description" class="product-description"></p>
+  </div>
+</div>
+
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        let allBrands = [];
         const API_BASE =
           window.location.hostname === "localhost"
             ? "http://localhost:3000"
             : "https://render-z7ii.onrender.com";
 
+        const productSet = new Map(); // 🌟 To store unique products (avoid duplicates)
+
+        async function fetchCategories() {
+          try {
+            const response = await fetch(`${API_BASE}/styles`);
+            if (!response.ok) throw new Error("Failed to fetch styles.");
+            const data = await response.json();
+            const uniqueCategories = [
+              ...new Set(data.styles.map((style) => style.baseCategory)),
+            ];
+            renderCategories(uniqueCategories);
+          } catch (error) {
+            console.error("❌ Error fetching categories:", error);
+          }
+        }
+
+
+        function typeMessage(text, elementId, speed = 50) {
+  const el = document.getElementById(elementId);
+  el.textContent = "";
+  let i = 0;
+  const interval = setInterval(() => {
+    el.textContent += text.charAt(i);
+    i++;
+    if (i >= text.length) clearInterval(interval);
+  }, speed);
+}
+ 
+
+        async function fetchProducts(brandId, brandName) {
+  try {
+    // Show the spinner
+    document.getElementById("spinner").style.display = "block";
+
+    document.getElementById(
+      "brand-title"
+    ).textContent = `Products from ${brandName}`;
+    typeMessage(
+  "✨ Polishing up the finest fashion just for you...From the greatest cataloge ever...",
+  "loading-message",
+  100
+);
+
+
+    stackBrandCards();
+
+    const response = await fetch(`${API_BASE}/products/${brandId}`);
+    if (!response.ok) throw new Error("Failed to fetch products.");
+
+    const data = await response.json();
+    console.log("✅ API Response for Products:", data);
+
+    data.products.forEach((product) => {
+      console.log(`📌 Checking Product ${product.styleName}:`);
+      console.log("🎨 Variants:", product.variants);
+    });
+
+    addUniqueProducts(data.products);
+  } catch (error) {
+    console.error("❌ Error fetching products:", error);
+  } finally {
+    // Hide the spinner
+    document.getElementById("spinner").style.display = "none";
+  }
+}
+
+
+        let allBrands = [];
+
         async function fetchBrands() {
           try {
-            const brandList = document.getElementById("brand-list");
-            brandList.innerHTML = `<p>Loading brands...</p>`;
-
             const response = await fetch(`${API_BASE}/brands`);
-            if (!response.ok)
-              throw new Error(
-                `Failed to fetch brands. Status: ${response.status}`
-              );
-
+            if (!response.ok) throw new Error("Failed to fetch brands.");
             const data = await response.json();
-            allBrands = data.brands;
-            renderBrands(allBrands);
+            allBrands = data.brands; // 🌟 Save for reuse
+            renderBrands(data.brands);
           } catch (error) {
             console.error("❌ Error fetching brands:", error);
-            document.getElementById("brand-list").innerHTML =
-              "<p>Failed to load brands.</p>";
           }
+        }
+
+        function expandBrandCards() {
+          const brandList = document.getElementById("brand-list");
+
+          // Animate out
+          brandList.classList.add("transitioning");
+          brandList.classList.remove("transitioned");
+
+          setTimeout(() => {
+            brandList.classList.remove("stacked");
+            brandList.innerHTML = allBrands
+              .map(
+                (brand) => `
+        <div class="product-item" onclick="fetchProducts('${brand.brandID}', '${
+                  brand.name
+                }')">
+          ${
+            brand.image
+              ? `<img src="https://www.ssactivewear.com/${brand.image}" alt="${brand.name}">`
+              : ""
+          }
+        </div>`
+              )
+              .join("");
+
+            // Animate in
+            requestAnimationFrame(() => {
+              brandList.classList.remove("transitioning");
+              brandList.classList.add("transitioned");
+            });
+          }, 300);
         }
 
         function renderBrands(brands) {
           const brandList = document.getElementById("brand-list");
           brandList.innerHTML = brands
             .map(
-              (brand) =>
-                `<div class="item" onclick="fetchProducts('${
-                  brand.brandID
-                }', '${brand.name}')">
-                        <strong>${brand.name}</strong>
-                        <div class="item-id">Brand ID: ${brand.brandID}</div>
-                        ${
-                          brand.image
-                            ? `<img src="https://www.ssactivewear.com/${brand.image}" class="item-image" alt="${brand.name}">`
-                            : ""
-                        }
-                    </div>`
+              (brand) => `
+            <div class="product-item" onclick="fetchProducts('${
+              brand.brandID
+            }', '${brand.name}')">
+                
+                ${
+                  brand.image
+                    ? `<img src="https://www.ssactivewear.com/${brand.image}" alt="${brand.name}">`
+                    : ""
+                }
+            </div>
+        `
             )
             .join("");
         }
 
-        async function fetchProducts(brandId, brandName) {
-          console.log("🔍 Fetching products for brand:", brandId);
+        function renderCategories(categories) {
+          const categoryList = document.getElementById("category-list");
+          categoryList.innerHTML = categories
+            .map(
+              (category) => `
+            <button onclick="filterByCategory('${category}')">${category}</button>
+        `
+            )
+            .join("");
+        }
 
-          document.getElementById(
-            "brand-title"
-          ).textContent = `Products from ${brandName}`;
-          document.getElementById("brand-title").style.display = "block";
-          document.getElementById("product-list").innerHTML =
-            "<p>Loading products...</p>";
-          document.getElementById("product-list").style.display = "grid";
-
+        async function filterByCategory(category) {
           try {
-            const response = await fetch(`${API_BASE}/products/${brandId}`);
-            if (!response.ok)
-              throw new Error(
-                `Failed to fetch products. Status: ${response.status}`
-              );
-
-            const data = await response.json();
-            console.log("✅ Products Fetched:", data.products.length);
-
-            if (data.products.length === 0) {
-              document.getElementById("product-list").innerHTML =
-                "<p>No products found for this brand.</p>";
-            } else {
-              renderProducts(data.products);
-            }
-          } catch (error) {
-            console.error("❌ Error fetching products:", error);
             document.getElementById("product-list").innerHTML =
-              "<p>Failed to load products.</p>";
+              "<p>Loading products...</p>";
+            const response = await fetch(`${API_BASE}/styles`);
+            if (!response.ok) throw new Error("Failed to fetch styles.");
+            const data = await response.json();
+            const filteredProducts = data.styles.filter(
+              (style) =>
+                style.baseCategory.trim().toLowerCase() ===
+                category.trim().toLowerCase()
+            );
+            addUniqueProducts(filteredProducts);
+          } catch (error) {
+            console.error("❌ Error fetching styles:", error);
           }
         }
 
-        function renderProducts(products) {
-    console.log("🖼 Grouping products by style...");
-
-    const productList = document.getElementById("product-list");
-    productList.innerHTML = ""; // Clear previous content
-
-    if (products.length === 0) {
-        productList.innerHTML = `<p>No products found.</p>`;
-        return;
-    }
-
-    // ✅ Group products by `styleName`
-    const groupedProducts = {};
-    products.forEach(product => {
-        if (!groupedProducts[product.styleName]) {
-            groupedProducts[product.styleName] = [];
+        function addUniqueProducts(products) {
+          products.forEach((product) => {
+            if (!productSet.has(product.styleID)) {
+              productSet.set(product.styleID, product); // ✅ Track unique products
+            }
+          });
+          renderProducts();
         }
-        groupedProducts[product.styleName].push(product);
-    });
 
-    // ✅ Render each unique product style
-    productList.innerHTML = Object.keys(groupedProducts).map((styleName, index) => {
-        const productVariants = groupedProducts[styleName];
+        function stackBrandCards() {
+          const brandList = document.getElementById("brand-list");
 
-        // ✅ Get default product info (first variant)
-        const defaultProduct = productVariants[0];
+          // Trigger fade out
+          brandList.classList.add("transitioning");
+          brandList.classList.remove("transitioned");
 
-        // Format the default price to always show 2 decimal places
-        const defaultPrice = defaultProduct.piecePrice ? 
-            Number(defaultProduct.piecePrice.toString().replace(/[\$,]/g, '')).toFixed(2) : 
-            "N/A";
+          // Wait for animation before swapping content
+          setTimeout(() => {
+            brandList.classList.add("stacked");
+            brandList.innerHTML = `
+      <div class="stacked-card" onclick="expandBrandCards()">
+        <img 
+          src="https://cdn.ssactivewear.com/cdn-cgi/image/quality=80,w=131,f=auto/images/sns/logos/logo-ca.png" 
+          alt="S&S Logo"
+          class="ss-logo"
+        />
+        <p>Catalogue</p>
+      </div>
+    `;
 
-        // ✅ Extract unique colors
-        const uniqueColors = [...new Map(productVariants.map(variant => [variant.colorName, variant])).values()];
+            // Trigger fade in
+            requestAnimationFrame(() => {
+              brandList.classList.remove("transitioning");
+              brandList.classList.add("transitioned");
+            });
+          }, 300); // Matches transition duration
+        }
 
-        // ✅ Store all product variants in localStorage for easy retrieval
-        localStorage.setItem(`productVariants-${index}`, JSON.stringify(productVariants));
+        function renderProducts() {
+          const productList = document.getElementById("product-list");
+          productList.innerHTML = "";
 
-        return `
-            <div class="item">
-                <strong>${defaultProduct.brandName} - ${defaultProduct.styleName}</strong>
-                <div class="item-id">SKU: ${defaultProduct.sku}</div>
-                <img id="product-image-${index}" src="https://www.ssactivewear.com/${defaultProduct.colorFrontImage}" class="item-image" alt="${defaultProduct.styleName}">
+          productSet.forEach((product) => {
+            let price = "N/A";
+            if (product.piecePrice && !isNaN(parseFloat(product.piecePrice))) {
+              price = `$${(parseFloat(product.piecePrice) * 2).toFixed(2)}`;
+            }
 
-                <p>Size: ${defaultProduct.sizeName}</p>
-                <p>${defaultProduct.piecePrice ? `$${defaultPrice}` : 'N/A'}</p>
+            let imageUrl = product.colorFrontImage || product.styleImage || "";
+            console.log("🏷️ Product Image for Grid:", imageUrl);
 
-                <label for="color-select-${index}">Choose a Color:</label>
-                <select id="color-select-${index}" onchange="updateProductDetails(${index})">
-                    ${uniqueColors.map(variant => `
-                        <option value="${variant.colorFrontImage}" data-color="${variant.colorName}">
-                            ${variant.colorName}
-                        </option>
-                    `).join("")}
-                </select>
-
-                <label for="size-select-${index}">Choose a Size:</label>
-                <select id="size-select-${index}" onchange="updateProductDetails(${index})">
-                    ${[...new Set(productVariants.map(variant => variant.sizeName))].map(size => `
-                        <option value="${size}">${size}</option>
-                    `).join("")}
-                </select>
-
-                <p>Price: $<span id="product-price-${index}">${defaultPrice}</span></p>
+            // ✅ Store product data as JSON in a data attribute
+            productList.innerHTML += `
+            <div class="product-item" data-product='${JSON.stringify(product)}'>
+                ${product.brandName} - ${product.styleName}
+                <img src="https://www.ssactivewear.com/${imageUrl}" alt="${
+              product.styleName
+            }">
+                <p>Size: ${product.sizeName || "Varies"}</p>
+                <p>Price: ${price}</p>
             </div>
         `;
-    }).join("");
+          });
 
-    console.log("✅ Products successfully grouped and rendered.");
+          // ✅ Add event listeners to all product items (for opening modal)
+          document.querySelectorAll(".product-item").forEach((item) => {
+            item.addEventListener("click", function () {
+              console.log("✅ Product Clicked! Opening Modal...");
+              const productData = JSON.parse(this.getAttribute("data-product"));
+              console.log("🔍 Product Data Sent to Modal:", productData);
+              openModal(productData);
+            });
+          });
+        }
+
+        // Modal
+        let selectedColor = null;
+
+        function updateSkuFromSelection(variants) {
+  if (!selectedColor || !selectedSize) {
+    document.getElementById("modal-sku").textContent = "Select size & color";
+    return;
+  }
+
+  const match = variants.find(v =>
+    v.colorName === selectedColor && v.sizeName === selectedSize
+  );
+
+  if (match && match.sku) {
+    document.getElementById("modal-sku").textContent = match.sku;
+  } else {
+    document.getElementById("modal-sku").textContent = "SKU not found";
+  }
 }
 
 
 
+async function openModal(product) {
+  try {
+    console.log("🔍 Product Data Received in Modal:", product);
+    if (!product) return;
 
-       // ✅ Function to update product image based on selected color
-       function updateProductDetails(index) {
-    let colorSelect = document.getElementById(`color-select-${index}`);
-    let sizeSelect = document.getElementById(`size-select-${index}`);
-    let imageElement = document.getElementById(`product-image-${index}`);
-    let priceElement = document.getElementById(`product-price-${index}`);
+    const modal = document.getElementById("product-modal");
+    if (!modal) return;
 
-    let selectedColor = colorSelect.options[colorSelect.selectedIndex].getAttribute("data-color");
-    let selectedSize = sizeSelect.value;
-    let newImage = colorSelect.value;
+    document.getElementById("modal-title").textContent =
+      product.styleName || "Unknown Product";
+    document.getElementById("modal-brand").textContent =
+      product.brandName || "Unknown Brand";
 
-    console.log(`🎨 Selected Color: ${selectedColor}`);
-    console.log(`📏 Selected Size: ${selectedSize}`);
+    // ✅ SKU placeholder
+    document.getElementById("modal-sku").textContent = "Select size & color";
 
-    if (imageElement && newImage) {
-        imageElement.src = `https://www.ssactivewear.com/${newImage}`;
+    const defaultImage =
+      product.colorFrontImage || product.styleImage || "";
+    document.getElementById(
+      "modal-image"
+    ).src = `https://www.ssactivewear.com/${defaultImage}`;
+
+    const originalPrice = product.piecePrice
+      ? parseFloat(product.piecePrice)
+      : 0;
+    const updatedPrice = originalPrice * 2;
+    document.getElementById("modal-price").textContent =
+      updatedPrice.toFixed(2);
+
+    // 🔥 Get full style info
+    const descRes = await fetch(`/styles/${product.styleID}`);
+    const fullData = await descRes.json();
+    const style = Array.isArray(fullData) ? fullData[0] : fullData;
+    const variants = style.variants || [];
+
+    const description =
+      style.description || "No description available.";
+    document.getElementById("modal-description").innerHTML = description;
+
+    const thumbnailContainer = document.getElementById("thumbnail-column");
+    thumbnailContainer.innerHTML = "";
+
+    const imageFields = [
+      product.colorOnModelFrontImage,
+      product.colorOnModelSideImage,
+      product.colorOnModelBackImage,
+      product.colorFrontImage,
+      product.colorSideImage,
+      product.colorBackImage,
+      product.styleImage,
+    ];
+    const imagePaths = [...new Set(imageFields.filter(Boolean))];
+    imagePaths.slice(0, 5).forEach((path) => {
+      const thumb = document.createElement("img");
+      thumb.src = `https://www.ssactivewear.com/${path}`;
+      thumb.alt = "Thumbnail";
+      thumb.classList.add("thumbnail-img");
+      thumb.onclick = () => {
+        document.getElementById("modal-image").src = thumb.src;
+      };
+      thumbnailContainer.appendChild(thumb);
+    });
+
+    // ✅ Track selected options for SKU lookup
+    let selectedColor = null;
+    let selectedSize = null;
+
+    function updateSkuFromSelection() {
+      const skuSpan = document.getElementById("modal-sku");
+      if (!selectedColor || !selectedSize) {
+        skuSpan.textContent = "Select size & color";
+        return;
+      }
+
+      const match = variants.find(
+        (v) => v.colorName === selectedColor && v.sizeName === selectedSize
+      );
+
+      skuSpan.textContent = match?.sku || "SKU not found";
     }
 
-    // ✅ Retrieve stored product variants
-    let productVariants = JSON.parse(localStorage.getItem(`productVariants-${index}`)) || [];
+    // ✅ Colors
+    const colorContainer = document.getElementById("color-options");
+    colorContainer.innerHTML = "";
 
-    // ✅ Debug: Show all available variants for this product
-    console.log("🔎 Available Variants for this product:", productVariants);
+    if (variants.length > 0) {
+      const seenColors = new Set();
 
-    // ✅ Find all sizes available for the selected color
-    let filteredSizes = productVariants.filter(variant => variant.colorName === selectedColor);
-    
-    // ✅ Update size dropdown while maintaining selected size if available
-    const currentSize = sizeSelect.value;
-    sizeSelect.innerHTML = filteredSizes.map(variant => `
-        <option value="${variant.sizeName}" ${variant.sizeName === currentSize ? 'selected' : ''}>
-            ${variant.sizeName}
-        </option>
-    `).join("");
+      variants.forEach((variant) => {
+        if (!variant.colorName || seenColors.has(variant.colorName)) return;
+        seenColors.add(variant.colorName);
 
-    // If current size isn't available in new color, use first available size
-    if (!filteredSizes.some(v => v.sizeName === currentSize)) {
-        selectedSize = filteredSizes[0].sizeName;
-    }
+        const colorImageUrl = variant.colorFrontImage
+          ? `https://www.ssactivewear.com/${variant.colorFrontImage}`
+          : `https://www.ssactivewear.com/${product.styleImage || ""}`;
 
-    // ✅ Find the correct variant (color + size match)
-    let selectedVariant = filteredSizes.find(variant => variant.sizeName === selectedSize);
+        const colorSwatch = document.createElement("div");
+        colorSwatch.classList.add("color-swatch");
 
-    // ✅ Update price without double dollar signs
-    if (selectedVariant && selectedVariant.piecePrice) {
-        let rawPrice = selectedVariant.piecePrice.toString().replace(/[\$,]/g, ''); // Remove any $ and commas
-        let formattedPrice = Number(rawPrice).toFixed(2); // Force two decimal places
-        console.log(`✅ Found Variant: ${selectedVariant.colorName} - ${selectedVariant.sizeName} @ $${formattedPrice}`);
-        priceElement.textContent = formattedPrice; // Set price without $
-    } else {
-        console.log(`❌ No price found for ${selectedColor} (${selectedSize})`);
-        priceElement.textContent = "N/A";
-    }
-}
+        if (variant.colorSwatchImage) {
+          colorSwatch.style.backgroundImage = `url(https://www.ssactivewear.com/${variant.colorSwatchImage})`;
+        } else {
+          colorSwatch.style.backgroundColor =
+            variant.color1 || getColorHex(variant.colorName, style);
+        }
 
-// ✅ Attach function to global scope
-window.updateProductDetails = updateProductDetails;
+        colorSwatch.setAttribute("data-color", variant.colorName);
+        colorSwatch.setAttribute("data-image", colorImageUrl);
 
-// Add filterBrands function
-function filterBrands() {
-    const searchBox = document.getElementById("search-box");
-    const searchTerm = searchBox.value.toLowerCase();
-    
-    const filteredBrands = allBrands.filter(brand => 
-        brand.name.toLowerCase().includes(searchTerm)
-    );
-    
-    renderBrands(filteredBrands);
-}
+        colorSwatch.onclick = function (event) {
+          selectedColor = variant.colorName;
+          document.getElementById("modal-image").src = colorImageUrl;
 
-// Make filterBrands globally accessible
-window.filterBrands = filterBrands;
+          document.querySelectorAll(".color-swatch").forEach((el) =>
+            el.classList.remove("selected-color")
+          );
+          event.target.classList.add("selected-color");
 
+          const imageSet = [
+            variant.colorOnModelFrontImage,
+            variant.colorOnModelSideImage,
+            variant.colorOnModelBackImage,
+            variant.colorFrontImage,
+            variant.colorSideImage,
+            variant.colorBackImage,
+            product.styleImage,
+          ];
+          const images = [...new Set(imageSet.filter(Boolean))];
+          thumbnailContainer.innerHTML = "";
+          images.slice(0, 5).forEach((imgPath) => {
+            const thumb = document.createElement("img");
+            thumb.src = `https://www.ssactivewear.com/${imgPath}`;
+            thumb.classList.add("thumbnail-img");
+            thumb.onclick = () => {
+              document.getElementById("modal-image").src = thumb.src;
+            };
+            thumbnailContainer.appendChild(thumb);
+          });
 
+          updateSkuFromSelection();
+        };
 
-
-
-
-
-
-        fetchBrands();
-        window.fetchProducts = fetchProducts;
+        colorContainer.appendChild(colorSwatch);
       });
+    } else {
+      colorContainer.innerHTML = `<p style="color: #ddd;">No Colors Available</p>`;
+    }
+
+    // ✅ Sizes
+    const sizeContainer = document.getElementById("modal-sizes");
+    sizeContainer.innerHTML = "";
+
+    if (variants.length > 0) {
+      const uniqueSizes = [...new Set(variants.map((v) => v.sizeName))].filter(Boolean);
+
+      if (uniqueSizes.length > 0) {
+        const label = document.createElement("div");
+        label.textContent = "Available Sizes:";
+        label.style.fontWeight = "bold";
+        label.style.marginTop = "1rem";
+        sizeContainer.appendChild(label);
+
+        uniqueSizes.forEach((size) => {
+          const sizeTag = document.createElement("span");
+          sizeTag.textContent = size;
+          sizeTag.classList.add("size-tag");
+          sizeTag.style.cursor = "pointer";
+
+          sizeTag.onclick = () => {
+            selectedSize = size;
+
+            const matched = variants.find(
+              (v) =>
+                v.sizeName === size &&
+                (!selectedColor || v.colorName === selectedColor)
+            );
+
+            if (matched && matched.piecePrice) {
+              const updated = parseFloat(matched.piecePrice) * 2;
+              document.getElementById("modal-price").textContent =
+                updated.toFixed(2);
+            }
+
+            document.querySelectorAll(".size-tag").forEach((el) =>
+              el.classList.remove("selected-size")
+            );
+            sizeTag.classList.add("selected-size");
+
+            updateSkuFromSelection();
+          };
+
+          sizeContainer.appendChild(sizeTag);
+        });
+      } else {
+        sizeContainer.innerHTML = `<p style="color: #ccc;">Sizes not listed</p>`;
+      }
+    }
+
+    modal.style.display = "flex";
+    console.log("✅ Modal should be visible now!");
+  } catch (error) {
+    console.error("❌ ERROR in openModal():", error);
+  }
+}
+
+
+        function closeModal() {
+          document.getElementById("product-modal").style.display = "none";
+        }
+        window.expandBrandCards = expandBrandCards;
+
+        window.filterByCategory = filterByCategory;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.fetchProducts = fetchProducts;
+
+        fetchCategories();
+        fetchBrands();
+      });
+
+      function getColorHex(colorName, product) {
+        if (!product || !product.variants) {
+          console.warn(
+            `⚠️ No variants available for ${colorName}, using fallback color.`
+          );
+          return "#CCCCCC"; // Default light gray
+        }
+
+        // ✅ Try to find the variant in the product
+        const variant = product.variants.find((v) => v.colorName === colorName);
+
+        if (variant) {
+          if (variant.colorSwatchImage) {
+            console.log(
+              `🖼️ Using Swatch Image for ${colorName}: https://www.ssactivewear.com/${variant.colorSwatchImage}`
+            );
+            return `url(https://www.ssactivewear.com/${variant.colorSwatchImage})`; // ✅ Use image instead
+          } else if (variant.color1) {
+            console.log(`✅ Using API HEX for ${colorName}: ${variant.color1}`);
+            return variant.color1; // ✅ Use API hex value if available
+          }
+        }
+
+        console.warn(
+          `⚠️ No color1 or swatch image found for ${colorName}, using fallback.`
+        );
+        return "#CCCCCC"; // Default to gray if missing
+      }
+
+      function updateColor(color, imageUrl) {
+        console.log(`🎨 Color Selected: ${color}, Image: ${imageUrl}`);
+
+        // ✅ Update Image in Modal
+        document.getElementById("modal-image").src = imageUrl;
+
+        // ✅ Remove 'selected-color' from all swatches
+        document
+          .querySelectorAll(".color-swatch")
+          .forEach((swatch) => swatch.classList.remove("selected-color"));
+
+        // ✅ Add 'selected-color' class to the clicked swatch
+        event.target.classList.add("selected-color");
+      }
     </script>
   </body>
 </html>
