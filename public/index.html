@@ -88,7 +88,7 @@
         margin-top: 10px;
         border-radius: 5px;
       }
-      
+
       .product-item:hover {
         background: #bbb9b9;
         box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
@@ -279,7 +279,7 @@
       .stacked-card {
         background-color: #7f7d7da4;
         border-radius: 10px;
-       padding-top: 20px;
+        padding-top: 20px;
         color: white;
         font-size: 1.5rem;
         font-weight: bold;
@@ -346,101 +346,166 @@
         pointer-events: auto;
       }
       .loader {
-  border: 6px solid #f3f3f3;
-  border-top: 6px solid #555;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
-  margin: 10px auto;
-}
+        border: 6px solid #f3f3f3;
+        border-top: 6px solid #555;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 10px auto;
+      }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-.spinner-wrapper {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 30px;
-  text-align: center;
-  font-size: 1rem;
-  color: #ccc;
-  animation: fadeIn 0.3s ease-in-out;
-}
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .spinner-wrapper {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        text-align: center;
+        font-size: 1rem;
+        color: #ccc;
+        animation: fadeIn 0.3s ease-in-out;
+      }
 
-/* Optional fade-in effect */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+      /* Optional fade-in effect */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
 
+      /* Skeleton Loader Animation */
+      @keyframes pulse {
+        0% {
+          background-color: #3a3a3a;
+        }
+        50% {
+          background-color: #4a4a4a;
+        }
+        100% {
+          background-color: #3a3a3a;
+        }
+      }
 
+      .placeholder-card {
+        background: #2e2e2e;
+        border-radius: 8px;
+        padding: 10px;
+        height: 220px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: pulse 1.2s infinite ease-in-out;
+      }
 
+      .placeholder-image {
+        width: 80%;
+        height: 120px;
+        border-radius: 6px;
+        background-color: #444;
+        margin-bottom: 10px;
+      }
+
+      .placeholder-line {
+        height: 10px;
+        width: 70%;
+        border-radius: 4px;
+        background-color: #555;
+        margin: 4px 0;
+      }
+      /* Sidebar category skeleton */
+      .category-placeholder {
+        height: 20px;
+        width: 90%;
+        margin: 6px auto;
+        border-radius: 6px;
+        background-color: #444;
+        animation: pulse 1.2s infinite ease-in-out;
+      }
     </style>
   </head>
   <body>
-  <!-- Sidebar Navigation -->
-<div class="sidebar">
-  <h1>Categories</h1>
-  <div class="category-list" id="category-list">Loading categories...</div>
-</div>
+    <div class="sidebar">
+      <h1>Categories</h1>
 
-<!-- Main Content -->
-<div class="main-content">
-  <h1>Brands Available</h1>
-
-  <!-- Brand Grid -->
-  <div class="grid-container" id="brand-list">Loading brands...</div>
-
-  <!-- ✅ Spinner (centered and styled) -->
-  <div id="spinner" class="spinner-wrapper">
-    <div class="loader"></div>
-    <p id="loading-message"></p>
-  </div>
-
-  <!-- ✅ Product Section stays inside main-content -->
-  <h2 id="brand-title"></h2>
-  <div class="grid-container" id="product-list"></div>
-</div>
-
-<!-- Modal Structure -->
-<div id="product-modal" class="modal">
-  <div class="modal-content">
-    <span class="close-button" onclick="closeModal()">&times;</span>
-
-    <div class="modal-layout">
-      <!-- Left: Product Image Only -->
-      <div class="modal-image-container">
-        <div class="image-layout">
-          <div class="thumbnail-column" id="thumbnail-column"></div>
-          <div class="main-image-frame">
-            <img id="modal-image" src="" alt="Product Image" />
-          </div>
-        </div>
+      <!-- Spinner -->
+      <div
+        id="category-spinner"
+        class="spinner-wrapper"
+        style="display: none; padding: 10px 0"
+      >
+        <div class="loader" style="margin: auto"></div>
       </div>
 
-      <!-- Right: Product Details -->
-      <div class="modal-details">
-        <h2 id="modal-title"></h2>
-        <p><strong>Brand:</strong> <span id="modal-brand"></span></p>
-        <p><strong>SKU:</strong> <span id="modal-sku">Select size & color</span></p>
-
-        <p><strong>Colors:</strong></p>
-        <div class="color-palette" id="color-options"></div>
-        <p><strong>Sizes:</strong></p>
-        <div id="modal-sizes" class="product-sizes"></div>
-        <p><strong>Price:</strong> $<span id="modal-price"></span></p>
-      </div>
+      <div class="category-list" id="category-list"></div>
     </div>
 
-    <!-- Description -->
-    <p id="modal-description" class="product-description"></p>
-  </div>
-</div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <h1>Brands Available</h1>
 
+      <!-- Brand Grid -->
+      <div class="grid-container" id="brand-list">Loading brands...</div>
+
+      <!-- ✅ Spinner (centered and styled) -->
+      <div id="spinner" class="spinner-wrapper">
+        <div class="loader"></div>
+        <p id="loading-message"></p>
+      </div>
+
+      <!-- ✅ Product Section stays inside main-content -->
+      <h2 id="brand-title"></h2>
+      <div class="grid-container" id="product-list"></div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="product-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-button" onclick="closeModal()">&times;</span>
+
+        <div class="modal-layout">
+          <!-- Left: Product Image Only -->
+          <div class="modal-image-container">
+            <div class="image-layout">
+              <div class="thumbnail-column" id="thumbnail-column"></div>
+              <div class="main-image-frame">
+                <img id="modal-image" src="" alt="Product Image" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Product Details -->
+          <div class="modal-details">
+            <h2 id="modal-title"></h2>
+            <p><strong>Brand:</strong> <span id="modal-brand"></span></p>
+            <p>
+              <strong>SKU:</strong>
+              <span id="modal-sku">Select size & color</span>
+            </p>
+
+            <p><strong>Colors:</strong></p>
+            <div class="color-palette" id="color-options"></div>
+            <p><strong>Sizes:</strong></p>
+            <div id="modal-sizes" class="product-sizes"></div>
+            <p><strong>Price:</strong> $<span id="modal-price"></span></p>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <p id="modal-description" class="product-description"></p>
+      </div>
+    </div>
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
@@ -453,68 +518,106 @@
 
         async function fetchCategories() {
           try {
+            // ✅ Show spinner
+            const spinnerEl = document.getElementById("category-spinner");
+            if (spinnerEl) spinnerEl.style.display = "flex";
+
+            // ✅ Show category placeholders
+            showCategoryPlaceholders(19);
+
             const response = await fetch(`${API_BASE}/styles`);
             if (!response.ok) throw new Error("Failed to fetch styles.");
+
             const data = await response.json();
+
             const uniqueCategories = [
               ...new Set(data.styles.map((style) => style.baseCategory)),
             ];
+
             renderCategories(uniqueCategories);
           } catch (error) {
             console.error("❌ Error fetching categories:", error);
+          } finally {
+            // ✅ Hide spinner
+            const spinnerEl = document.getElementById("category-spinner");
+            if (spinnerEl) spinnerEl.style.display = "none";
           }
         }
 
+        function renderCategories(categories) {
+          const categoryList = document.getElementById("category-list");
+          categoryList.innerHTML = categories
+            .map(
+              (category) => `
+            <button onclick="filterByCategory('${category}')">${category}</button>
+        `
+            )
+            .join("");
+        }
 
         function typeMessage(text, elementId, speed = 50) {
-  const el = document.getElementById(elementId);
-  el.textContent = "";
-  let i = 0;
-  const interval = setInterval(() => {
-    el.textContent += text.charAt(i);
-    i++;
-    if (i >= text.length) clearInterval(interval);
-  }, speed);
-}
- 
+          const el = document.getElementById(elementId);
+          el.textContent = "";
+          let i = 0;
+          const interval = setInterval(() => {
+            el.textContent += text.charAt(i);
+            i++;
+            if (i >= text.length) clearInterval(interval);
+          }, speed);
+        }
+
+        function showPlaceholderCards(count = 8) {
+          const productList = document.getElementById("product-list");
+          productList.innerHTML = "";
+
+          for (let i = 0; i < count; i++) {
+            productList.innerHTML += `
+      <div class="product-item placeholder-card">
+        <div class="placeholder-image"></div>
+        <div class="placeholder-line" style="width: 60%;"></div>
+        <div class="placeholder-line" style="width: 40%;"></div>
+        <div class="placeholder-line" style="width: 50%;"></div>
+      </div>
+    `;
+          }
+        }
 
         async function fetchProducts(brandId, brandName) {
-  try {
-    // Show the spinner
-    document.getElementById("spinner").style.display = "block";
+          try {
+            // Show the spinner
+            document.getElementById("spinner").style.display = "block";
+            showPlaceholderCards(18);
+            document.getElementById(
+              "brand-title"
+            ).textContent = `Products from ${brandName}`;
 
-    document.getElementById(
-      "brand-title"
-    ).textContent = `Products from ${brandName}`;
-    typeMessage(
-  "✨ Polishing up the finest fashion just for you...From the greatest cataloge ever...",
-  "loading-message",
-  100
-);
+            typeMessage(
+              "✨ Polishing up the finest fashion just for you...From the greatest cataloge ever...",
+              "loading-message",
+              100
+            );
 
+            stackBrandCards();
 
-    stackBrandCards();
+            const response = await fetch(`${API_BASE}/products/${brandId}`);
+            if (!response.ok) throw new Error("Failed to fetch products.");
 
-    const response = await fetch(`${API_BASE}/products/${brandId}`);
-    if (!response.ok) throw new Error("Failed to fetch products.");
+            const data = await response.json();
+            console.log("✅ API Response for Products:", data);
 
-    const data = await response.json();
-    console.log("✅ API Response for Products:", data);
+            data.products.forEach((product) => {
+              console.log(`📌 Checking Product ${product.styleName}:`);
+              console.log("🎨 Variants:", product.variants);
+            });
 
-    data.products.forEach((product) => {
-      console.log(`📌 Checking Product ${product.styleName}:`);
-      console.log("🎨 Variants:", product.variants);
-    });
-
-    addUniqueProducts(data.products);
-  } catch (error) {
-    console.error("❌ Error fetching products:", error);
-  } finally {
-    // Hide the spinner
-    document.getElementById("spinner").style.display = "none";
-  }
-}
-
+            addUniqueProducts(data.products);
+          } catch (error) {
+            console.error("❌ Error fetching products:", error);
+          } finally {
+            // Hide the spinner
+            document.getElementById("spinner").style.display = "none";
+          }
+        }
 
         let allBrands = [];
 
@@ -582,21 +685,31 @@
             .join("");
         }
 
-        function renderCategories(categories) {
+        function showCategoryPlaceholders(count = 10) {
           const categoryList = document.getElementById("category-list");
-          categoryList.innerHTML = categories
-            .map(
-              (category) => `
-            <button onclick="filterByCategory('${category}')">${category}</button>
-        `
-            )
-            .join("");
+          categoryList.innerHTML = `
+    <div style="text-align:center; color:#ccc; font-size: 0.85rem; margin-bottom: 10px;">
+      Loading categories...
+    </div>
+  `;
+
+          for (let i = 0; i < count; i++) {
+            const skeleton = document.createElement("div");
+            skeleton.classList.add("category-placeholder");
+            categoryList.appendChild(skeleton);
+          }
         }
 
         async function filterByCategory(category) {
           try {
             document.getElementById("product-list").innerHTML =
               "<p>Loading products...</p>";
+            // ✅ Set the title to reflect the selected category
+            document.getElementById(
+              "brand-title"
+            ).textContent = `Products in category: ${category}`;
+            document.getElementById("loading-message").textContent = "";
+            showPlaceholderCards(12);
             const response = await fetch(`${API_BASE}/styles`);
             if (!response.ok) throw new Error("Failed to fetch styles.");
             const data = await response.json();
@@ -649,6 +762,21 @@
           }, 300); // Matches transition duration
         }
 
+        function escapeHTML(str) {
+          return (
+            str?.replace(/[&<>"']/g, function (match) {
+              const escape = {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;",
+              };
+              return escape[match];
+            }) ?? ""
+          );
+        }
+
         function renderProducts() {
           const productList = document.getElementById("product-list");
           productList.innerHTML = "";
@@ -660,19 +788,25 @@
             }
 
             let imageUrl = product.colorFrontImage || product.styleImage || "";
-            console.log("🏷️ Product Image for Grid:", imageUrl);
 
-            // ✅ Store product data as JSON in a data attribute
+            // 🔒 Sanitize strings
+            const cleanBrand = escapeHTML(product.brandName);
+            const cleanStyle = escapeHTML(product.styleName);
+            const cleanSize = escapeHTML(product.sizeName || "Varies");
+            const cleanImageUrl = escapeHTML(imageUrl);
+            const encodedProductData = JSON.stringify(product).replace(
+              /'/g,
+              "&apos;"
+            );
+
             productList.innerHTML += `
-            <div class="product-item" data-product='${JSON.stringify(product)}'>
-                ${product.brandName} - ${product.styleName}
-                <img src="https://www.ssactivewear.com/${imageUrl}" alt="${
-              product.styleName
-            }">
-                <p>Size: ${product.sizeName || "Varies"}</p>
-                <p>Price: ${price}</p>
-            </div>
-        `;
+    <div class="product-item" data-product='${encodedProductData}'>
+      ${cleanBrand} - ${cleanStyle}
+      <img src="https://www.ssactivewear.com/${cleanImageUrl}" alt="${cleanStyle}">
+      <p>Size: ${cleanSize}</p>
+      <p>Price: ${price}</p>
+    </div>
+  `;
           });
 
           // ✅ Add event listeners to all product items (for opening modal)
@@ -690,229 +824,239 @@
         let selectedColor = null;
 
         function updateSkuFromSelection(variants) {
-  if (!selectedColor || !selectedSize) {
-    document.getElementById("modal-sku").textContent = "Select size & color";
-    return;
-  }
+          if (!selectedColor || !selectedSize) {
+            document.getElementById("modal-sku").textContent =
+              "Select size & color";
+            return;
+          }
 
-  const match = variants.find(v =>
-    v.colorName === selectedColor && v.sizeName === selectedSize
-  );
+          const match = variants.find(
+            (v) => v.colorName === selectedColor && v.sizeName === selectedSize
+          );
 
-  if (match && match.sku) {
-    document.getElementById("modal-sku").textContent = match.sku;
-  } else {
-    document.getElementById("modal-sku").textContent = "SKU not found";
-  }
-}
-
-
-
-async function openModal(product) {
-  try {
-    console.log("🔍 Product Data Received in Modal:", product);
-    if (!product) return;
-
-    const modal = document.getElementById("product-modal");
-    if (!modal) return;
-
-    document.getElementById("modal-title").textContent =
-      product.styleName || "Unknown Product";
-    document.getElementById("modal-brand").textContent =
-      product.brandName || "Unknown Brand";
-
-    // ✅ SKU placeholder
-    document.getElementById("modal-sku").textContent = "Select size & color";
-
-    const defaultImage =
-      product.colorFrontImage || product.styleImage || "";
-    document.getElementById(
-      "modal-image"
-    ).src = `https://www.ssactivewear.com/${defaultImage}`;
-
-    const originalPrice = product.piecePrice
-      ? parseFloat(product.piecePrice)
-      : 0;
-    const updatedPrice = originalPrice * 2;
-    document.getElementById("modal-price").textContent =
-      updatedPrice.toFixed(2);
-
-    // 🔥 Get full style info
-    const descRes = await fetch(`/styles/${product.styleID}`);
-    const fullData = await descRes.json();
-    const style = Array.isArray(fullData) ? fullData[0] : fullData;
-    const variants = style.variants || [];
-
-    const description =
-      style.description || "No description available.";
-    document.getElementById("modal-description").innerHTML = description;
-
-    const thumbnailContainer = document.getElementById("thumbnail-column");
-    thumbnailContainer.innerHTML = "";
-
-    const imageFields = [
-      product.colorOnModelFrontImage,
-      product.colorOnModelSideImage,
-      product.colorOnModelBackImage,
-      product.colorFrontImage,
-      product.colorSideImage,
-      product.colorBackImage,
-      product.styleImage,
-    ];
-    const imagePaths = [...new Set(imageFields.filter(Boolean))];
-    imagePaths.slice(0, 5).forEach((path) => {
-      const thumb = document.createElement("img");
-      thumb.src = `https://www.ssactivewear.com/${path}`;
-      thumb.alt = "Thumbnail";
-      thumb.classList.add("thumbnail-img");
-      thumb.onclick = () => {
-        document.getElementById("modal-image").src = thumb.src;
-      };
-      thumbnailContainer.appendChild(thumb);
-    });
-
-    // ✅ Track selected options for SKU lookup
-    let selectedColor = null;
-    let selectedSize = null;
-
-    function updateSkuFromSelection() {
-      const skuSpan = document.getElementById("modal-sku");
-      if (!selectedColor || !selectedSize) {
-        skuSpan.textContent = "Select size & color";
-        return;
-      }
-
-      const match = variants.find(
-        (v) => v.colorName === selectedColor && v.sizeName === selectedSize
-      );
-
-      skuSpan.textContent = match?.sku || "SKU not found";
-    }
-
-    // ✅ Colors
-    const colorContainer = document.getElementById("color-options");
-    colorContainer.innerHTML = "";
-
-    if (variants.length > 0) {
-      const seenColors = new Set();
-
-      variants.forEach((variant) => {
-        if (!variant.colorName || seenColors.has(variant.colorName)) return;
-        seenColors.add(variant.colorName);
-
-        const colorImageUrl = variant.colorFrontImage
-          ? `https://www.ssactivewear.com/${variant.colorFrontImage}`
-          : `https://www.ssactivewear.com/${product.styleImage || ""}`;
-
-        const colorSwatch = document.createElement("div");
-        colorSwatch.classList.add("color-swatch");
-
-        if (variant.colorSwatchImage) {
-          colorSwatch.style.backgroundImage = `url(https://www.ssactivewear.com/${variant.colorSwatchImage})`;
-        } else {
-          colorSwatch.style.backgroundColor =
-            variant.color1 || getColorHex(variant.colorName, style);
+          if (match && match.sku) {
+            document.getElementById("modal-sku").textContent = match.sku;
+          } else {
+            document.getElementById("modal-sku").textContent = "SKU not found";
+          }
         }
 
-        colorSwatch.setAttribute("data-color", variant.colorName);
-        colorSwatch.setAttribute("data-image", colorImageUrl);
+        async function openModal(product) {
+          try {
+            console.log("🔍 Product Data Received in Modal:", product);
+            if (!product) return;
 
-        colorSwatch.onclick = function (event) {
-          selectedColor = variant.colorName;
-          document.getElementById("modal-image").src = colorImageUrl;
+            const modal = document.getElementById("product-modal");
+            if (!modal) return;
 
-          document.querySelectorAll(".color-swatch").forEach((el) =>
-            el.classList.remove("selected-color")
-          );
-          event.target.classList.add("selected-color");
+            document.getElementById("modal-title").textContent =
+              product.styleName || "Unknown Product";
+            document.getElementById("modal-brand").textContent =
+              product.brandName || "Unknown Brand";
+            document.getElementById("modal-sku").textContent =
+              "Select size & color";
 
-          const imageSet = [
-            variant.colorOnModelFrontImage,
-            variant.colorOnModelSideImage,
-            variant.colorOnModelBackImage,
-            variant.colorFrontImage,
-            variant.colorSideImage,
-            variant.colorBackImage,
-            product.styleImage,
-          ];
-          const images = [...new Set(imageSet.filter(Boolean))];
-          thumbnailContainer.innerHTML = "";
-          images.slice(0, 5).forEach((imgPath) => {
-            const thumb = document.createElement("img");
-            thumb.src = `https://www.ssactivewear.com/${imgPath}`;
-            thumb.classList.add("thumbnail-img");
-            thumb.onclick = () => {
-              document.getElementById("modal-image").src = thumb.src;
-            };
-            thumbnailContainer.appendChild(thumb);
-          });
+            const defaultImage =
+              product.colorFrontImage || product.styleImage || "";
+            document.getElementById(
+              "modal-image"
+            ).src = `https://www.ssactivewear.com/${defaultImage}`;
 
-          updateSkuFromSelection();
-        };
+            const originalPrice = product.piecePrice
+              ? parseFloat(product.piecePrice)
+              : 0;
+            const updatedPrice = originalPrice * 2;
+            document.getElementById("modal-price").textContent =
+              updatedPrice.toFixed(2);
 
-        colorContainer.appendChild(colorSwatch);
-      });
-    } else {
-      colorContainer.innerHTML = `<p style="color: #ddd;">No Colors Available</p>`;
-    }
-
-    // ✅ Sizes
-    const sizeContainer = document.getElementById("modal-sizes");
-    sizeContainer.innerHTML = "";
-
-    if (variants.length > 0) {
-      const uniqueSizes = [...new Set(variants.map((v) => v.sizeName))].filter(Boolean);
-
-      if (uniqueSizes.length > 0) {
-        const label = document.createElement("div");
-        label.textContent = "Available Sizes:";
-        label.style.fontWeight = "bold";
-        label.style.marginTop = "1rem";
-        sizeContainer.appendChild(label);
-
-        uniqueSizes.forEach((size) => {
-          const sizeTag = document.createElement("span");
-          sizeTag.textContent = size;
-          sizeTag.classList.add("size-tag");
-          sizeTag.style.cursor = "pointer";
-
-          sizeTag.onclick = () => {
-            selectedSize = size;
-
-            const matched = variants.find(
-              (v) =>
-                v.sizeName === size &&
-                (!selectedColor || v.colorName === selectedColor)
+            // 🔥 Fetch full style info from backend
+            const descRes = await fetch(
+              `${API_BASE}/styles/${product.styleID}`
             );
+            const contentType = descRes.headers.get("content-type");
 
-            if (matched && matched.piecePrice) {
-              const updated = parseFloat(matched.piecePrice) * 2;
-              document.getElementById("modal-price").textContent =
-                updated.toFixed(2);
+            if (!descRes.ok || contentType.includes("text/html")) {
+              throw new Error("Invalid JSON response from server");
             }
 
-            document.querySelectorAll(".size-tag").forEach((el) =>
-              el.classList.remove("selected-size")
-            );
-            sizeTag.classList.add("selected-size");
+            const fullData = await descRes.json();
+            const style = Array.isArray(fullData) ? fullData[0] : fullData;
+            const variants = style.variants || [];
 
-            updateSkuFromSelection();
-          };
+            const description =
+              style.description || "No description available.";
+            document.getElementById("modal-description").innerHTML =
+              description;
 
-          sizeContainer.appendChild(sizeTag);
-        });
-      } else {
-        sizeContainer.innerHTML = `<p style="color: #ccc;">Sizes not listed</p>`;
-      }
-    }
+            const thumbnailContainer =
+              document.getElementById("thumbnail-column");
+            thumbnailContainer.innerHTML = "";
 
-    modal.style.display = "flex";
-    console.log("✅ Modal should be visible now!");
-  } catch (error) {
-    console.error("❌ ERROR in openModal():", error);
-  }
-}
+            const imageFields = [
+              product.colorOnModelFrontImage,
+              product.colorOnModelSideImage,
+              product.colorOnModelBackImage,
+              product.colorFrontImage,
+              product.colorSideImage,
+              product.colorBackImage,
+              product.styleImage,
+            ];
+            const imagePaths = [...new Set(imageFields.filter(Boolean))];
+            imagePaths.slice(0, 5).forEach((path) => {
+              const thumb = document.createElement("img");
+              thumb.src = `https://www.ssactivewear.com/${path}`;
+              thumb.alt = "Thumbnail";
+              thumb.classList.add("thumbnail-img");
+              thumb.onclick = () => {
+                document.getElementById("modal-image").src = thumb.src;
+              };
+              thumbnailContainer.appendChild(thumb);
+            });
 
+            let selectedColor = null;
+            let selectedSize = null;
+
+            function updateSkuFromSelection() {
+              const skuSpan = document.getElementById("modal-sku");
+              if (!selectedColor || !selectedSize) {
+                skuSpan.textContent = "Select size & color";
+                return;
+              }
+
+              const match = variants.find(
+                (v) =>
+                  v.colorName === selectedColor && v.sizeName === selectedSize
+              );
+              skuSpan.textContent = match?.sku || "SKU not found";
+            }
+
+            // ✅ Render colors
+            const colorContainer = document.getElementById("color-options");
+            colorContainer.innerHTML = "";
+
+            if (variants.length > 0) {
+              const seenColors = new Set();
+
+              variants.forEach((variant) => {
+                if (!variant.colorName || seenColors.has(variant.colorName))
+                  return;
+                seenColors.add(variant.colorName);
+
+                const colorImageUrl = variant.colorFrontImage
+                  ? `https://www.ssactivewear.com/${variant.colorFrontImage}`
+                  : `https://www.ssactivewear.com/${product.styleImage || ""}`;
+
+                const colorSwatch = document.createElement("div");
+                colorSwatch.classList.add("color-swatch");
+
+                if (variant.colorSwatchImage) {
+                  colorSwatch.style.backgroundImage = `url(https://www.ssactivewear.com/${variant.colorSwatchImage})`;
+                } else {
+                  colorSwatch.style.backgroundColor =
+                    variant.color1 || getColorHex(variant.colorName, style);
+                }
+
+                colorSwatch.setAttribute("data-color", variant.colorName);
+                colorSwatch.setAttribute("data-image", colorImageUrl);
+
+                colorSwatch.onclick = function (event) {
+                  selectedColor = variant.colorName;
+                  document.getElementById("modal-image").src = colorImageUrl;
+
+                  document
+                    .querySelectorAll(".color-swatch")
+                    .forEach((el) => el.classList.remove("selected-color"));
+                  event.target.classList.add("selected-color");
+
+                  const imageSet = [
+                    variant.colorOnModelFrontImage,
+                    variant.colorOnModelSideImage,
+                    variant.colorOnModelBackImage,
+                    variant.colorFrontImage,
+                    variant.colorSideImage,
+                    variant.colorBackImage,
+                    product.styleImage,
+                  ];
+                  const images = [...new Set(imageSet.filter(Boolean))];
+                  thumbnailContainer.innerHTML = "";
+                  images.slice(0, 5).forEach((imgPath) => {
+                    const thumb = document.createElement("img");
+                    thumb.src = `https://www.ssactivewear.com/${imgPath}`;
+                    thumb.classList.add("thumbnail-img");
+                    thumb.onclick = () => {
+                      document.getElementById("modal-image").src = thumb.src;
+                    };
+                    thumbnailContainer.appendChild(thumb);
+                  });
+
+                  updateSkuFromSelection();
+                };
+
+                colorContainer.appendChild(colorSwatch);
+              });
+            } else {
+              colorContainer.innerHTML = `<p style="color: #ddd;">No Colors Available</p>`;
+            }
+
+            // ✅ Render sizes
+            const sizeContainer = document.getElementById("modal-sizes");
+            sizeContainer.innerHTML = "";
+
+            if (variants.length > 0) {
+              const uniqueSizes = [
+                ...new Set(variants.map((v) => v.sizeName)),
+              ].filter(Boolean);
+
+              if (uniqueSizes.length > 0) {
+                const label = document.createElement("div");
+                label.textContent = "Available Sizes:";
+                label.style.fontWeight = "bold";
+                label.style.marginTop = "1rem";
+                sizeContainer.appendChild(label);
+
+                uniqueSizes.forEach((size) => {
+                  const sizeTag = document.createElement("span");
+                  sizeTag.textContent = size;
+                  sizeTag.classList.add("size-tag");
+                  sizeTag.style.cursor = "pointer";
+
+                  sizeTag.onclick = () => {
+                    selectedSize = size;
+
+                    const matched = variants.find(
+                      (v) =>
+                        v.sizeName === size &&
+                        (!selectedColor || v.colorName === selectedColor)
+                    );
+
+                    if (matched && matched.piecePrice) {
+                      const updated = parseFloat(matched.piecePrice) * 2;
+                      document.getElementById("modal-price").textContent =
+                        updated.toFixed(2);
+                    }
+
+                    document
+                      .querySelectorAll(".size-tag")
+                      .forEach((el) => el.classList.remove("selected-size"));
+                    sizeTag.classList.add("selected-size");
+
+                    updateSkuFromSelection();
+                  };
+
+                  sizeContainer.appendChild(sizeTag);
+                });
+              } else {
+                sizeContainer.innerHTML = `<p style="color: #ccc;">Sizes not listed</p>`;
+              }
+            }
+
+            // ✅ Show modal
+            modal.style.display = "flex";
+            console.log("✅ Modal should be visible now!");
+          } catch (error) {
+            console.error("❌ ERROR in openModal():", error);
+          }
+        }
 
         function closeModal() {
           document.getElementById("product-modal").style.display = "none";
