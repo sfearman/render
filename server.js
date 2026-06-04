@@ -2,10 +2,13 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import dotenv from "dotenv";
+import compression from "compression";
 
 dotenv.config();
 
 const app = express();
+
+app.use(compression());
 
 app.use(cors());
 app.use(express.json());
@@ -383,6 +386,26 @@ app.get("/styles/category/:category", async (req, res) => {
 // =====================================================
 // START SERVER
 // =====================================================
+
+// =====================================================
+// WARM CACHE ON STARTUP
+// =====================================================
+
+(async () => {
+  try {
+    console.log("🔥 Warming cache...");
+
+    await Promise.all([
+      getCachedBrands(),
+      getCachedProducts(),
+      getCachedStyles(),
+    ]);
+
+    console.log("✅ Cache warmed successfully");
+  } catch (err) {
+    console.error("❌ Cache warm-up failed:", err.message);
+  }
+})();
 
 const PORT = process.env.PORT || 3000;
 
